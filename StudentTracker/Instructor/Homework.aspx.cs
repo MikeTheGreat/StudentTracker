@@ -28,7 +28,7 @@ namespace StudentTracker.Instructor
             }
             else
             {
-                Lbl_pageTitle.Text = "Please return to the Instructor homepage to choose a class";
+                Response.Redirect("~/Instructor");
                 btnAddHmw.Visible = false;
             }
             //var assignmentList = db.Assignments
@@ -66,7 +66,7 @@ namespace StudentTracker.Instructor
 
         protected void btnAddHmw_Click(object sender, EventArgs e)
         {
-            Server.Transfer("AddHomework.aspx?courseID=Request.QueryString['courseID']");
+            Response.Redirect("AddHomework.aspx?CourseID=Request.QueryString['CourseID']");
         }
 
         //protected void btnRemoveHmw_Click(object sender, EventArgs e)

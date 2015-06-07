@@ -31,22 +31,40 @@ namespace StudentTracker.Instructor {
         protected global::System.Web.UI.WebControls.Literal ErrorMessage;
         
         /// <summary>
-        /// StudentGradeFile control.
+        /// GradeUploadFile control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload StudentGradeFile;
+        protected global::AjaxControlToolkit.AjaxFileUpload GradeUploadFile;
         
         /// <summary>
-        /// btnUploadGrade control.
+        /// Progressbar control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnUploadGrade;
+        protected global::System.Web.UI.WebControls.Image Progressbar;
+        
+        /// <summary>
+        /// btnupload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnupload;
+        
+        /// <summary>
+        /// FileName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label FileName;
         
         /// <summary>
         /// gvCurrentStudentEnroll control.
