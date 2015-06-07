@@ -285,6 +285,8 @@
     <Content Include="Images\logo_blue.png" />
     <Content Include="Images\logo_bl_1.png" />
     <Content Include="Images\logo_grey.png" />
+    <Content Include="Images\minus.png" />
+    <Content Include="Images\plus.png" />
     <Content Include="Instructor\AddHomework.aspx" />
     <Content Include="Instructor\ClassHomepage.aspx" />
     <Content Include="Instructor\EditClass.aspx" />

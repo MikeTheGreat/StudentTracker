@@ -12,6 +12,7 @@ using Novacode;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.IO;
 
 namespace StudentTracker.Student
 {
@@ -49,9 +50,47 @@ namespace StudentTracker.Student
             drpDwn_Assignment.DataTextField = "Assignment_Name";
             drpDwn_Assignment.DataSource = assignementList;
             drpDwn_Assignment.DataBind();
-            populateAssignmentList();
             
+            
+            if(!IsPostBack)
+            {
+                string userID = User.Identity.GetUserId();
+                gvStudentAssignments.DataSource = GetData(string.Format("select * from Assignments A inner join StudentAssignments SA on SA.AssignmentID=A.AssignmentID where SA.UserID='{0}' and A.courseID='{1}'", userID, classID));
+                gvStudentAssignments.DataBind();
+            }
+        }
 
+        private static DataTable GetData(string query)
+        {
+            string strConnString = ConfigurationManager.ConnectionStrings["dbStudentTracker"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(strConnString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = query;
+                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    {
+                        cmd.Connection = con;
+                        sda.SelectCommand = cmd;
+                        using (DataSet ds = new DataSet())
+                        {
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
+                            return dt;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        protected void DownloadFile(object sender, EventArgs e)
+        {
+            string filePath = Server.MapPath(FolderPath)+(sender as LinkButton).CommandArgument;           
+            Response.ContentType = ContentType;
+            Response.AppendHeader("Content-Disposition", "attachment; filename="  + Path.GetFileName(filePath));
+            Response.WriteFile(filePath);
+            Response.End();
         }
 
         private void populateAssignmentList()
@@ -76,8 +115,8 @@ namespace StudentTracker.Student
                 SqlDataAdapter da = new SqlDataAdapter(sqlcom);
                 //Adds or refreshes rows in a specified range in the DataSet to match those in the data source using the DataTable dt
                 da.Fill(dt);
-                AssignmentListView.DataSource = dt;
-                AssignmentListView.DataBind();
+                gvStudentAssignments.DataSource = dt;
+                gvStudentAssignments.DataBind();
                 SQLconn.Close();
                 
             }
@@ -87,36 +126,48 @@ namespace StudentTracker.Student
             }
         }
 
-        private void populateAssignmentFileList(int StudentAssignID)
+
+        protected void OnRowDataBound(object sender, GridViewRowEventArgs e)
         {
-            //assignment list view
-            int classID = Convert.ToInt32(Request.QueryString["CourseID"]);
-            try
+            if (e.Row.RowType == DataControlRowType.DataRow)
             {
-                //create sql connection
-                SqlConnection SQLconn = new SqlConnection(ConfigurationManager.ConnectionStrings["dbStudentTracker"].ConnectionString);
-                SQLconn.Open();
-                // create sql query joining users and programs table
-                string user = User.Identity.GetUserId();
-                string getAssignmentFile = "select * from AssignmentFiles  where StudentAssignmentID=@StudentAssignID";
-
-                SqlCommand sqlcom = new SqlCommand(getAssignmentFile, SQLconn);
-                sqlcom.Parameters.AddWithValue("@StudentAssignID", StudentAssignID);               
-
-                DataTable dt = new DataTable(); //create datatable 
-                //Initializes a new instance of the SqlDataAdapter class with a SelectCommand and a SqlConnection object.
-                SqlDataAdapter da = new SqlDataAdapter(sqlcom);
-                //Adds or refreshes rows in a specified range in the DataSet to match those in the data source using the DataTable dt
-                da.Fill(dt);
-                AssignmentListView.DataSource = dt;
-                AssignmentListView.DataBind();
-                SQLconn.Close();
-            }
-            catch (Exception ex)
-            {
-                Response.Write("Database connection error: " + ex.ToString());
+                string StudentAssignmentId = gvStudentAssignments.DataKeys[e.Row.RowIndex].Value.ToString();
+                GridView gvAssignmentFiles = e.Row.FindControl("gvAssignmentFiles") as GridView;
+                gvAssignmentFiles.DataSource = GetData(string.Format("select * from AssignmentFiles  where StudentAssignmentID='{0}'", StudentAssignmentId));
+                gvAssignmentFiles.DataBind();
             }
         }
+
+        //private void populateAssignmentFileList(int StudentAssignID)
+        //{
+        //    //assignment list view
+        //    int classID = Convert.ToInt32(Request.QueryString["CourseID"]);
+        //    try
+        //    {
+        //        //create sql connection
+        //        SqlConnection SQLconn = new SqlConnection(ConfigurationManager.ConnectionStrings["dbStudentTracker"].ConnectionString);
+        //        SQLconn.Open();
+        //        // create sql query joining users and programs table
+        //        string user = User.Identity.GetUserId();
+        //        string getAssignmentFile = "select * from AssignmentFiles  where StudentAssignmentID=@StudentAssignID";
+
+        //        SqlCommand sqlcom = new SqlCommand(getAssignmentFile, SQLconn);
+        //        sqlcom.Parameters.AddWithValue("@StudentAssignID", StudentAssignID);               
+
+        //        DataTable dt = new DataTable(); //create datatable 
+        //        //Initializes a new instance of the SqlDataAdapter class with a SelectCommand and a SqlConnection object.
+        //        SqlDataAdapter da = new SqlDataAdapter(sqlcom);
+        //        //Adds or refreshes rows in a specified range in the DataSet to match those in the data source using the DataTable dt
+        //        da.Fill(dt);
+        //        AssignmentFileListView.DataSource = dt;
+        //        AssignmentFileListView.DataBind();
+        //        SQLconn.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Response.Write("Database connection error: " + ex.ToString());
+        //    }
+        //}
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             ErrorMessage.Text = " ";
