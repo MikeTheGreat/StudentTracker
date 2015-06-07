@@ -1,4 +1,6 @@
-﻿using StudentTracker.Models;
+﻿using Microsoft.AspNet.Identity;
+using Novacode;
+using StudentTracker.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,6 @@ using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Configuration;
-using Novacode;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;

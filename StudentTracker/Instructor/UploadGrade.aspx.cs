@@ -10,12 +10,14 @@ using System.Web.UI.HtmlControls;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Configuration;
-using System.IO;
 using System.Data;
 using System.Web.Security;
 using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.IO;
+
+
 
 
 namespace StudentTracker.Instructor
@@ -29,13 +31,16 @@ namespace StudentTracker.Instructor
 
         DataTable studentLists = new DataTable();
 
+        string isHeader = "Yes";  //Show Header Yes/No
+
         protected void Page_Load(object sender, EventArgs e)
         {
             //upload student grade for particular class required CourseID
             if (Request.QueryString["CourseID"] == null)
             {
                 //page has been attempt without CourseID, redirect user back to Instructor Homepage
-                Response.Redirect("~/Instructor");
+                //Response.Redirect("~/Instructor");
+                DisableUpload();
             }
 
             //CourseID is found, let determine what class about to upload student grade
@@ -46,9 +51,7 @@ namespace StudentTracker.Instructor
             //Class not found, redirect to instructor homepage
             if (msg == null)
             {
-                ErrorMessage.Text = "Class is not found, make sure your browser session still valid then try again.";
                 DisableUpload();
-                ClassName.Text = "Course Not Found!";
             }
             else
                 ClassName.Text = msg.ToString();
@@ -69,7 +72,7 @@ namespace StudentTracker.Instructor
                 .Join(db.Users, u => u.UserId, um => um.Id, (u, um) => new { u, um })
                 .Where(w => w.u.CourseId == CourseID && !w.u.UserId.Equals(userID))
                 .OrderBy(o => o.um.FirstName).ThenBy(i => i.um.LastName)
-                .Select(s => new { SID = s.um.SID, FullName = s.um.FirstName +", "+ s.um.LastName, Message = "", Status = "" }).ToList();
+                .Select(s => new {UserID=s.u.UserId, SID = s.um.SID, FullName = s.um.FirstName + ", " + s.um.LastName, Message = "", Status = "" }).ToList();
 
             gvCurrentStudentEnroll.DataSource = EnrollStudentLists;
             gvCurrentStudentEnroll.DataBind();
@@ -77,28 +80,52 @@ namespace StudentTracker.Instructor
             studentLists = ConvertListToDataTable(EnrollStudentLists);
         }
 
-        protected void UploadGrade_Click(object sender, EventArgs e)
+        //Save upload-grade file to server in temp folder
+        //upload file using ajaxfileupload control
+        protected void OnUploadComplete(object sender, AjaxControlToolkit.AjaxFileUploadEventArgs e)
         {
             //verify that the FileUpload control contains a file.
-            if (StudentGradeFile.HasFile)
-            {
-                string isHeader = "Yes";  //Show Header Yes/No
-                string FileName = Path.GetFileName(StudentGradeFile.PostedFile.FileName);
-                string Extension = Path.GetExtension(StudentGradeFile.PostedFile.FileName);
-                string FolderPath = ConfigurationManager.AppSettings["AppDataFolderPath"];
+            string FileName = Path.GetFileName(e.FileName);
+            //                string Extension = Path.GetExtension(e.FileName);
+            string FolderPath = ConfigurationManager.AppSettings["AppDataFolderPath"] + "Temp/";
 
-                string FilePath = Server.MapPath(FolderPath + FileName);
-                StudentGradeFile.SaveAs(FilePath);
-                ImportToGrid(FilePath, Extension, isHeader);
+            string FilePath = Server.MapPath(FolderPath + FileName);
+
+            if (CreateFolder(Server.MapPath(FolderPath)))
+            {
+                GradeUploadFile.SaveAs(FilePath);
+
+                Session["UploadFilePath"] = FilePath;
+                Session["UploadFileName"] = FileName;
+                e.PostedUrl = string.Format("?preview=1&fileId={0}", e.FileId);
             }
-            else
-                ErrorMessage.Text = "You did not select Student Grade to upload.";
+            //ImportToGrid(FilePath, isHeader);
+        }
+
+
+        //Creates the folder if needed.
+        //<param name="path">The path.</param>
+        //<returns></returns>
+        private bool CreateFolder(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                }
+                catch (Exception)
+                {
+                    /*TODO: You must process this exception.*/
+                    return false;
+                }
+            }
+            return true;
         }
 
         //display result uploat grade (batch)
-        protected void ImportToGrid(string FilePath, string Extension, string isHDR)
+        protected void ImportToGrid(string FilePath, string isHDR)
         {
-            Boolean isFormat = true;
             DataTable dt = new DataTable();
             DataTable status = new DataTable();
             status.Columns.Add("Status", typeof(string));
@@ -106,55 +133,76 @@ namespace StudentTracker.Instructor
             DataTable grade = new DataTable();
             grade.Columns.Add("Message", typeof(string));
             ErrorMessage.Text = "";
-            switch (Extension)
+
+            dt = XcelToDataTable(FilePath);
+
+            //is dt empty, display message then do nothing
+            if (dt == null)
             {
-                case ".xls": //Excel 97-03
-                    ErrorMessage.Text = "Excel 2003 (.xls) or older is not support, please convert to Excel 2007 or later version then try again.";
-                    isFormat = false;
-                    break;
-                case ".xlsx": //Excel 2007 and later
-                    break;
-                default:
-                    ErrorMessage.Text = "File format not support. Please upload Excel file (.xlsx) verion 2007 and later.";
-                    isFormat = false;
-                    break;
+                ErrorMessage.Text = "File upload in wrong format, invalid template or empty.";
+                return;
             }
 
-            if (isFormat)
+            Boolean isSIDMatch = false;
+            string[] temp = null;
+            int AssignmentID = 0, studentGrade = 0;
+            string rowStatus = null, rowMessage = null;
+            string userID = null, tmpMessage = null;
+            foreach (DataRow studentRow in studentLists.Rows)
             {
-                dt = XcelToDataTable(FilePath);
-
-                //is dt empty, display message then do nothing
-                if(dt == null)
+                isSIDMatch = false;
+                foreach (DataRow upload in dt.Rows)
                 {
-                    ErrorMessage.Text = "File upload in wrong format, invalid template or empty.";
-                    return;
-                }
-
-                Boolean isSIDMatch = false;
-                foreach (DataRow row in studentLists.Rows)
-                {
-                    isSIDMatch = false;
-                    foreach (DataRow upload in dt.Rows)
+                    //column1:UserID
+                    //column2:SID
+                    if (studentRow[1].ToString().Equals(upload[0].ToString()))
                     {
-                        if (row[0].ToString().Equals(upload[0].ToString()))
+                        temp = null;
+                        AssignmentID = 0;
+                        rowStatus = "<span class='text-warning'>Unchange</span>";
+                        rowMessage = "No grade add or change for this student.";
+                        userID = studentRow[0].ToString();
+                        tmpMessage = "";
+                        foreach (DataColumn column in dt.Columns)
                         {
-                            //status.Rows.Add("Ready");
-                            row["Message"] = "Ready batch upload grade for this student.";
-                            //grade.Rows.Add("Ready batch upload grade for this student.");
-                            row["Status"] = "Ready";
-                            isSIDMatch = true;
-                            break;
+                            temp = column.ColumnName.Split('_');
+                            if (temp.Length > 1)
+                            {
+                                if (!temp[1].Trim().Equals("") || temp[1].Trim() != null)
+                                    AssignmentID = Convert.ToInt32(temp[1]);
+
+                                var AssignmentGrade = db.StudentAssignments
+                                                      .Where(w=>w.AssignmentID == AssignmentID && w.UserId.Equals(userID)).FirstOrDefault();
+
+                                if (AssignmentGrade != null)
+                                {
+                                    if (!upload[column].ToString().Trim().Equals("")) studentGrade = Convert.ToInt32(upload[column]);
+                                    else studentGrade = 0;
+
+                                    AssignmentGrade.Grade = studentGrade;
+                                    db.SaveChanges();
+                                    rowStatus = "<span class='text-success'>Success</span>";
+                                    tmpMessage += temp[0].Trim() +": "+AssignmentGrade.Grade.ToString()+" ";
+                                }
+                            }
                         }
-                    }
-                    if (!isSIDMatch)
-                    {
-                        //status.Rows.Add("<span class='text-danger'>Not Ready</span>");
-                        row["Status"] = "<span class='text-danger'>Not Ready</span>";
-                        //grade.Rows.Add("<span class='text-danger'>Student not found from grade upload.</span>");
-                        row["Message"] = "<span class='text-danger'>Student not found from grade upload.</span>";
+                        studentRow["Status"] = rowStatus.Trim();
+                        if(tmpMessage.Trim().Equals("") || tmpMessage.Trim() == null)
+                            studentRow["Message"] = "<span class='text-warning'>" + rowMessage.Trim() + "</span>";
+                        else
+                            studentRow["Message"] = "<span class='text-success'>" + tmpMessage.Trim() + "</span>";
+                        isSIDMatch = true;
+                        break;
                     }
                 }
+                if (!isSIDMatch)
+                {
+                    //status.Rows.Add("<span class='text-danger'>Not Ready</span>");
+                    studentRow["Status"] = "<span class='text-danger'>No Action</span>";
+                    //grade.Rows.Add("<span class='text-danger'>Student not found from grade upload.</span>");
+                    studentRow["Message"] = "<span class='text-danger'>Student not found in grade upload file.</span>";
+                }
+
                 studentLists.AcceptChanges();
 
                 gvCurrentStudentEnroll.DataSource = studentLists;
@@ -165,8 +213,11 @@ namespace StudentTracker.Instructor
         //disable all buttons
         protected void DisableUpload()
         {
-            btnUploadGrade.Enabled = false;
-            StudentGradeFile.Enabled = false;
+            GradeUploadFile.Enabled = false;
+            //StudentGradeFile.Enabled = false;
+            ErrorMessage.Text = "Class is not found, make sure your browser session still valid then try again.";
+            ClassName.Text = "Course Not Found!";
+
         }
 
         //convert List<> to DataTable
@@ -221,7 +272,7 @@ namespace StudentTracker.Instructor
                 IEnumerable<Sheet> sheets = spreadSheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>();//.Where(s=>s.Name=="sheet name");
                 //if Sheet Name not found return null
                 //if(sheets.Count() ==) return null;
-                
+
                 string relationshipId = sheets.First().Id.Value;
                 WorksheetPart worksheetPart = (WorksheetPart)spreadSheetDocument.WorkbookPart.GetPartById(relationshipId);
                 Worksheet workSheet = worksheetPart.Worksheet;
@@ -233,9 +284,7 @@ namespace StudentTracker.Instructor
                 if (cells.Count() == 0) return null;
 
                 foreach (Cell cell in rows.ElementAt(0))
-                {
-                    dataTable.Columns.Add(GetCellValue(spreadSheetDocument, cell));
-                }
+                    dataTable.Columns.Add(GetCellValue(spreadSheetDocument, cell));                    
 
                 foreach (Row row in rows)
                 {
@@ -263,13 +312,25 @@ namespace StudentTracker.Instructor
             string value = cell.CellValue.InnerXml;
 
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-            {
                 return stringTablePart.SharedStringTable.ChildElements[Int32.Parse(value)].InnerText;
-            }
             else
-            {
                 return value;
+        }
+
+        protected void btnupload_Click(object sender, EventArgs e)
+        {
+            if (Session["UploadFilePath"] != null && Session["UploadFileName"] != null)
+            {
+                string FilePath = Session["UploadFilePath"].ToString();
+                ErrorMessage.Text += "<br>" + FilePath;
+                ImportToGrid(FilePath, isHeader);
+                FileName.Text = "Uploaded File: " + Session["UploadFileName"].ToString();
+
+                //reset session
+                Session["UploadFilePath"] = null;
+                Session["UploadFileName"] = null;
             }
         }
+
     }
 }

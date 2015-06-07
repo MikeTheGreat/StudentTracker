@@ -28,7 +28,7 @@ namespace StudentTracker
             {
                 tempList = (from a in dc.Courses
                             orderby a.Name
-                            //where a.Name.Contains(pre)
+                            where a.Name.Contains(pre)
                             group a by a.Name into am
                             select am.Key).ToList();
             }

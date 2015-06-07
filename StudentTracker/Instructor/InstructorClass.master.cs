@@ -10,9 +10,10 @@ namespace StudentTracker.Instructor
 {
     public partial class InstructorClassMaster : System.Web.UI.MasterPage
     {
+        public int classID = 0;
         protected void Page_Load(object sender, EventArgs e)
         {
-            int classID = Convert.ToInt32(Request.QueryString["field1"]);
+            classID = Convert.ToInt32(Request.QueryString["field1"]);
             testtodd1.HRef = "Homework.aspx?CourseID=" + classID;
             queryhelper.HRef = "AddHomework.aspx?CourseID=" + classID;
 
