@@ -23,43 +23,42 @@ namespace StudentTracker.Student
         private string FolderPath = ConfigurationManager.AppSettings["AppDataFolderPath"];
         // name to be used in Insertion into student assignment files
         private string fileName;
-        
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
-            int classID = Convert.ToInt32(Request.QueryString["CourseID"]);
-            var dbClassID = db.Courses.SingleOrDefault(i => i.ID.Equals(classID));
-            if (dbClassID != null)
+            if (!IsPostBack)
             {
-                Lbl_pageTitle.Text = dbClassID.Name;
-            }
-            else
-            {
-                Lbl_pageTitle.Text = "Please return to the Student homepage to choose a class";
+                int classID = Convert.ToInt32(Request.QueryString["CourseID"]);
+                var dbClassID = db.Courses.SingleOrDefault(i => i.ID.Equals(classID));
+                if (dbClassID != null)
+                {
+                    Lbl_pageTitle.Text = dbClassID.Name;
+                }
+                else
+                {
+                    Lbl_pageTitle.Text = "Please return to the Student homepage to choose a class";
 
-            }
+                }
 
-            var assignementList = db.Assignments
-                   .Where(c => c.CourseID == classID)
-                   .Select(i => new { Assignment_ID = i.AssignmentID, Assignment_Name = i.AssignmentName })
-                   .ToList();
+                var assignementList = db.Assignments
+                       .Where(c => c.CourseID == classID)
+                       .Select(i => new { Assignment_ID = i.AssignmentID, Assignment_Name = i.AssignmentName })
+                       .ToList();
 
-            //load current courses into dropdown
-            drpDwn_Assignment.DataValueField = "Assignment_ID";
-            drpDwn_Assignment.DataTextField = "Assignment_Name";
-            drpDwn_Assignment.DataSource = assignementList;
-            drpDwn_Assignment.DataBind();
-            
-            
-            if(!IsPostBack)
-            {
+                //load current courses into dropdown
+                drpDwn_Assignment.DataValueField = "Assignment_ID";
+                drpDwn_Assignment.DataTextField = "Assignment_Name";
+                drpDwn_Assignment.DataSource = assignementList;
+                drpDwn_Assignment.DataBind();
+
                 string userID = User.Identity.GetUserId();
                 gvStudentAssignments.DataSource = GetData(string.Format("select * from Assignments A inner join StudentAssignments SA on SA.AssignmentID=A.AssignmentID where SA.UserID='{0}' and A.courseID='{1}'", userID, classID));
                 gvStudentAssignments.DataBind();
             }
         }
 
+        // generic Get data function that will accept SQL query
         private static DataTable GetData(string query)
         {
             string strConnString = ConfigurationManager.ConnectionStrings["dbStudentTracker"].ConnectionString;
@@ -83,12 +82,12 @@ namespace StudentTracker.Student
             }
         }
 
-
+        //create downloadable link
         protected void DownloadFile(object sender, EventArgs e)
         {
-            string filePath = Server.MapPath(FolderPath)+(sender as LinkButton).CommandArgument;           
+            string filePath = Server.MapPath(FolderPath) + (sender as LinkButton).CommandArgument;
             Response.ContentType = ContentType;
-            Response.AppendHeader("Content-Disposition", "attachment; filename="  + Path.GetFileName(filePath));
+            Response.AppendHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(filePath));
             Response.WriteFile(filePath);
             Response.End();
         }
@@ -118,7 +117,7 @@ namespace StudentTracker.Student
                 gvStudentAssignments.DataSource = dt;
                 gvStudentAssignments.DataBind();
                 SQLconn.Close();
-                
+
             }
             catch (Exception ex)
             {
@@ -132,88 +131,68 @@ namespace StudentTracker.Student
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 string StudentAssignmentId = gvStudentAssignments.DataKeys[e.Row.RowIndex].Value.ToString();
+                //create nested gridview for assignment files
                 GridView gvAssignmentFiles = e.Row.FindControl("gvAssignmentFiles") as GridView;
                 gvAssignmentFiles.DataSource = GetData(string.Format("select * from AssignmentFiles  where StudentAssignmentID='{0}'", StudentAssignmentId));
                 gvAssignmentFiles.DataBind();
             }
         }
 
-        //private void populateAssignmentFileList(int StudentAssignID)
-        //{
-        //    //assignment list view
-        //    int classID = Convert.ToInt32(Request.QueryString["CourseID"]);
-        //    try
-        //    {
-        //        //create sql connection
-        //        SqlConnection SQLconn = new SqlConnection(ConfigurationManager.ConnectionStrings["dbStudentTracker"].ConnectionString);
-        //        SQLconn.Open();
-        //        // create sql query joining users and programs table
-        //        string user = User.Identity.GetUserId();
-        //        string getAssignmentFile = "select * from AssignmentFiles  where StudentAssignmentID=@StudentAssignID";
 
-        //        SqlCommand sqlcom = new SqlCommand(getAssignmentFile, SQLconn);
-        //        sqlcom.Parameters.AddWithValue("@StudentAssignID", StudentAssignID);               
-
-        //        DataTable dt = new DataTable(); //create datatable 
-        //        //Initializes a new instance of the SqlDataAdapter class with a SelectCommand and a SqlConnection object.
-        //        SqlDataAdapter da = new SqlDataAdapter(sqlcom);
-        //        //Adds or refreshes rows in a specified range in the DataSet to match those in the data source using the DataTable dt
-        //        da.Fill(dt);
-        //        AssignmentFileListView.DataSource = dt;
-        //        AssignmentFileListView.DataBind();
-        //        SQLconn.Close();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Response.Write("Database connection error: " + ex.ToString());
-        //    }
-        //}
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             ErrorMessage.Text = " ";
             string user = User.Identity.GetUserId();
             int Assignment_ID = Convert.ToInt32(drpDwn_Assignment.SelectedValue);
             string file_name = System.IO.Path.GetFileName(FileUpload1.FileName);
+            int VarStudentAssignment_ID = 0;
             FileUpload1.SaveAs(Server.MapPath(FolderPath) + file_name);
 
-            //insert new assignment into StudentAssignment table
-            var addStudentAssignment = new StudentAssignment
+            var StudentAssignmentList = db.StudentAssignments
+                .Where(q => q.AssignmentID == Assignment_ID && q.UserId == user)
+                .Select(i => new { StudentAssignment_ID = i.StudentAssignmentID })
+                .ToList();
+            //check if student already upload assignment previously
+            if (StudentAssignmentList.Count == 0)
             {
-                AssignmentID = Assignment_ID,
-                UserId = user
-            };
-
-            db.StudentAssignments.Add(addStudentAssignment);
-            db.SaveChanges();
-            int StudentAssignment_ID = addStudentAssignment.StudentAssignmentID;
-            //message status to user
-            if (StudentAssignment_ID > 0)
-            {
-                //insert new assignment into AssignmentFiles table
-                var addAssignmentFile = new AssignmentFile
+                //insert new assignment into StudentAssignment table
+                var addStudentAssignment = new StudentAssignment
                 {
-                    StudentAssignmentID = StudentAssignment_ID,
-                    FileName = file_name,
-                    UploadDate = System.DateTime.Now
+                    AssignmentID = Assignment_ID,
+                    UserId = user
                 };
+                db.StudentAssignments.Add(addStudentAssignment);
+                db.SaveChanges();
+                VarStudentAssignment_ID = addStudentAssignment.StudentAssignmentID;
+            }
+            else
+            {
+                foreach (var item in StudentAssignmentList)
+                { VarStudentAssignment_ID = item.StudentAssignment_ID; }
+            }
+            
+            //insert new assignment into AssignmentFiles table
+            var addAssignmentFile = new AssignmentFile
+            {
+                StudentAssignmentID = VarStudentAssignment_ID,
+                FileName = file_name,
+                UploadDate = System.DateTime.Now
+            };
+            db.AssignmentFiles.Add(addAssignmentFile);
+            int AssignmentFile_ID = db.SaveChanges();
+            if (AssignmentFile_ID > 0)
+            {
 
-                db.AssignmentFiles.Add(addAssignmentFile);
-                int AssignmentFile_ID = db.SaveChanges();
-                if (AssignmentFile_ID > 0)
-                {
+                ErrorMessage.Text += "<br>You have successfully upload your assignment.";
+                //to create the feedback and insert the infor into the tabels for tracking given studentassignment ID to use in insert of feedback document
 
-                    ErrorMessage.Text += "<br>You have successfully upload your assignment.";
-                    //to create the feedback and insert the infor into the tabels for tracking given studentassignment ID to use in insert of feedback document
+                createFeedback(VarStudentAssignment_ID);
+                populateAssignmentList();
 
-                    createFeedback(StudentAssignment_ID);
-                    populateAssignmentList();
-
-                }
-                else
-                    ErrorMessage.Text += "<br>System failed to upload your assignment.";
             }
             else
                 ErrorMessage.Text += "<br>System failed to upload your assignment.";
+
 
         }
         //this method inserts the information for the feedback document so it can be tracked and retrieved
@@ -323,14 +302,5 @@ namespace StudentTracker.Student
             insertFeedbackToTable(stuAssignID, assignName, stuName);
 
         }
-
-
-
-        protected void drpDwn_Assignment_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
     }
 }
