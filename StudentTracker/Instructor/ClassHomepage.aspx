@@ -12,38 +12,41 @@
         <asp:TableHeaderRow>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
-            <asp:TableHeaderCell Width="30px">&nbsp;</asp:TableHeaderCell>
+           
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
         </asp:TableHeaderRow>
         
         <asp:TableRow>
-            <asp:TableCell HorizontalAlign="Right">
+            <asp:TableCell HorizontalAlign="Right" VerticalAlign="Top">
                 <asp:Label ID="Lbl_sid" runat="server" Text="SID #:"></asp:Label>
             </asp:TableCell>
             <asp:TableCell>
-                <asp:TextBox ID="TxtBx_sid" runat="server"></asp:TextBox>
+                <asp:TextBox ID="TxtBx_sid" runat="server" TextMode="MultiLine" Height="250"></asp:TextBox>
             </asp:TableCell>
-            <asp:TableCell Width="20px">&nbsp;</asp:TableCell>
+            
+            <asp:TableCell ColumnSpan="2">
+                <asp:GridView ID="GrdVw_studentAddErrors" runat="server" Visible="False"></asp:GridView>
+            </asp:TableCell>
+            
+        </asp:TableRow>
+        <asp:TableRow>
+            <asp:TableCell>&nbsp;</asp:TableCell>
+            <asp:TableCell>&nbsp;</asp:TableCell>
+            
             <asp:TableCell>&nbsp;</asp:TableCell>
             <asp:TableCell>&nbsp;</asp:TableCell>
         </asp:TableRow>
         <asp:TableRow>
             <asp:TableCell>&nbsp;</asp:TableCell>
             <asp:TableCell>&nbsp;</asp:TableCell>
-            <asp:TableCell Width="20px">&nbsp;</asp:TableCell>
-            <asp:TableCell>&nbsp;</asp:TableCell>
-            <asp:TableCell>&nbsp;</asp:TableCell>
-        </asp:TableRow>
-        <asp:TableRow>
-            <asp:TableCell>&nbsp;</asp:TableCell>
-            <asp:TableCell>&nbsp;</asp:TableCell>
-            <asp:TableCell Width="20px">&nbsp;</asp:TableCell>
+            
             <asp:TableCell HorizontalAlign="Right">
                 <asp:Button ID="Btn_Submit" runat="server" Text="Submit" onClick="Btn_Submit_Click"/>
+                <asp:Button ID="Button1" runat="server" Text="Reset" onClick="Btn_Reset_Click"/>
             </asp:TableCell>
             <asp:TableCell>
-                <asp:Button ID="Btn_Reset" runat="server" Text="Reset" onClick="Btn_Reset_Click"/>
+                
             </asp:TableCell>
         </asp:TableRow>
     </asp:Table>
