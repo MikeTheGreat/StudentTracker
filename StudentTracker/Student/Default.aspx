@@ -68,8 +68,8 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <div style="width: 100%; float: left; font-weight: bold;"><a href="ClassHomepage.aspx?field1=<%#Eval("CourseID") %>"><%#Eval("CourseName") %></a></div>
+                                            <div class="col-md-12">   <%--<changed StudentClass.aspx need to have the code reference CourseID">--%>
+                                                <div style="width: 100%; float: left; font-weight: bold;"><a href="StudentClass.aspx?CourseID=<%#Eval("CourseID") %>"><%#Eval("CourseName") %></a></div>
                                             </div>
                                         </div>
                                     </div>
