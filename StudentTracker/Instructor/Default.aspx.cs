@@ -34,11 +34,12 @@ namespace StudentTracker.Instructor
                 // (to delete) var query = from q in db.QuarterYears where (q => yrArr.Contains(q.Year)) orderby(q => q.);
 
                 // This saves the instructors courses from the database "db" to CourseLists
+                // adjusted by Jen B to change the .Where to not include both years in yrArr and instead to only search for the current yr courses
                 var CourseLists = db.UsersCourses
                     .Join(db.Courses, c => c.CourseId, cm => cm.ID, (c, cm) => new { c, cm })
                     .Join(db.QuarterYears, q => q.cm.QuarterYearID, qm => qm.ID, (q, qm) => new {q, qm})
-                    .Where(w => yrArr.Contains(w.qm.Year) && w.qm.Quarter.Equals(qrt) && w.q.c.UserId.Equals(userID))
-                    .OrderByDescending(q => q.qm.Year)
+                    .Where(w => w.qm.Year.Equals(yr) && w.qm.Quarter.Equals(qrt) && w.q.c.UserId.Equals(userID))
+                    .OrderBy(q => q.qm.Year)
                     .Select(i => new { CourseID=i.q.cm.ID, CourseName=i.q.cm.Name, Year=i.qm.Year, Quarter=i.qm.Quarter })
                     .ToList();
 
@@ -69,9 +70,10 @@ namespace StudentTracker.Instructor
             string[] tempStr = null;
             var qrtArry = tempStr;
 
-            //if current quarter is Fall, then increase year+1 and quarter jump to Winter
+            //if current quarter is Fall, then increase year+1 and quarter jumps to Winter
             if (getQuarter.InQuarter() == 3)
             {
+                yr = yr + 1;                //added by Jen - with adjustment below we shouldn't need yrArr (?- to verify)
                 yrArr = new int[] { yr + 1 };
                 qrtArry = new string[] { getQuarter.GetQuarters(0) };
                 nextQuarterYear.Text = getQuarter.GetQuarters(0) + " " + (yr + 1).ToString();
@@ -83,12 +85,11 @@ namespace StudentTracker.Instructor
                 nextQuarterYear.Text = getQuarter.GetQuarters(getQuarter.InQuarter() + 1) + " " + yr.ToString();
             }
 
+            //adjusted by Jen B to include only the next quarter classes - changed "yrArr.Contains(w.qm.Year)" to "w.qm.Year.Equals(yr)"
             var CourseListsNextQrt = db.UsersCourses
                 .Join(db.Courses, c => c.CourseId, cm => cm.ID, (c, cm) => new { c, cm })
                 .Join(db.QuarterYears, q => q.cm.QuarterYearID, qm => qm.ID, (q, qm) => new { q, qm })
-                // (to delete) .Where(w => yrArr.Contains(w.qm.Year) && w.qm.Quarter.Equals(qrt) && w.q.c.UserId.Equals(userID))
-                // (to delete) .Where(w => yrArr.Contains(w.qm.Year) && w.q.c.UserId.Equals(userID))
-                .Where(w => w.q.c.UserId.Equals(userID) && yrArr.Contains(w.qm.Year) && qrtArry.Contains(w.qm.Quarter))
+                .Where(w => w.q.c.UserId.Equals(userID) && w.qm.Year.Equals(yr) && qrtArry.Contains(w.qm.Quarter))
                 .OrderByDescending(q => q.qm.Year)
                 .Select(i => new { CourseID = i.q.cm.ID, CourseName = i.q.cm.Name, Year = i.qm.Year, Quarter = i.qm.Quarter })
                 .ToList();
@@ -106,8 +107,6 @@ namespace StudentTracker.Instructor
             var CourseLists = db.UsersCourses
                 .Join(db.Courses, c => c.CourseId, cm => cm.ID, (c, cm) => new { c, cm })
                 .Join(db.QuarterYears, q => q.cm.QuarterYearID, qm => qm.ID, (q, qm) => new { q, qm })
-                // (to delete) .Where(w => yrArr.Contains(w.qm.Year) && w.qm.Quarter.Equals(qrt) && w.q.c.UserId.Equals(userID))
-                // (to delete) .Where(w => yrArr.Contains(w.qm.Year) && w.q.c.UserId.Equals(userID))
                 .Where(w => w.q.c.UserId.Equals(userID) && !quarterID.Contains(w.qm.ID))
                 .OrderByDescending(q => q.qm.Year)
                 .Select(i => new { CourseID = i.q.cm.ID, CourseName = i.q.cm.Name, Year = i.qm.Year, Quarter = i.qm.Quarter })
