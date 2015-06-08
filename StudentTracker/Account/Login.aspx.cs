@@ -79,7 +79,13 @@ namespace StudentTracker.Account
                                 ErrorMessage.Visible = true;
                                 break;
                         }
-                    }
+                     } // user.EmailConfirmed
+                }     // user != null
+                else
+                {
+                   FailureText.Text = "You need to register account using valid email address. Click create account link";
+                   ErrorMessage.Visible = true;
+                   ResendConfirm.Visible = true;
                 }
             }
         }
