@@ -94,13 +94,13 @@ namespace StudentTracker.Instructor
                         else
                         {
                             //Add to Dictionary: Already Enrolled
-                            errorCollection.Add(line, "Already enrolled");
+                            errorCollection.Add(line, "  Already enrolled");
                         }
                     }
                     else
                     {
                         //Add to Dictionary: No Account in Database
-                        errorCollection.Add(line, "No account created");
+                        errorCollection.Add(line, "  No account created");
                     }
 
 
@@ -116,23 +116,16 @@ namespace StudentTracker.Instructor
                     Lbl_Message.Visible = true;
                     Lbl_Message.Text = "You have successfully added " + countAdded + " students!";
                 }
-                else
-                {
-                    //Give message that adding new student was unsuccessful
-                    Lbl_Message.Visible = true;
-                    Lbl_Message.Text = "Attempt to add students was not successful.";
-                }
-
+                
                 if (errorCollection.Count > 0)
                 {
                     GrdVw_studentAddErrors.Visible = true;
                     GrdVw_studentAddErrors.DataSource = errorCollection;
                     GrdVw_studentAddErrors.DataBind();
+                    Lbl_studentError.Visible = true;
+                    Lbl_studentError.Text = errorCollection.Count + " students could not be added.";
 
                 }
-
-
-
             }
             else
             {

@@ -8,11 +8,11 @@
     <h3>
         <asp:Label ID="Lbl_addStudent" runat="server" Text="Add a student:"></asp:Label></h3>
     <asp:Label ID="Lbl_Message" runat="server" Text="This will show all messages to the user" ForeColor="Red" Visible="False"></asp:Label>
-    <asp:Table ID="Tble_addStudent" runat="server" BorderStyle="None" CellPadding="-1" CellSpacing="-1" HorizontalAlign="Center">
+ <asp:Table ID="Tble_addStudent" runat="server" BorderStyle="None" CellPadding="-1" CellSpacing="-1" HorizontalAlign="Center">
         <asp:TableHeaderRow>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
-           
+           <asp:TableHeaderCell Width="20px">&nbsp;</asp:TableHeaderCell>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
             <asp:TableHeaderCell>&nbsp;</asp:TableHeaderCell>
         </asp:TableHeaderRow>
@@ -24,29 +24,32 @@
             <asp:TableCell>
                 <asp:TextBox ID="TxtBx_sid" runat="server" TextMode="MultiLine" Height="250"></asp:TextBox>
             </asp:TableCell>
-            
+            <asp:TableCell>&nbsp;</asp:TableCell>
             <asp:TableCell ColumnSpan="2">
-                <asp:GridView ID="GrdVw_studentAddErrors" runat="server" Visible="False"></asp:GridView>
+                <asp:GridView ID="GrdVw_studentAddErrors" runat="server" Visible="False" GridLines="None" ShowHeader="false" ForeColor="Blue">
+
+                </asp:GridView>
+
             </asp:TableCell>
             
         </asp:TableRow>
         <asp:TableRow>
             <asp:TableCell>&nbsp;</asp:TableCell>
             <asp:TableCell>&nbsp;</asp:TableCell>
-            
+            <asp:TableCell>&nbsp;</asp:TableCell>
             <asp:TableCell>&nbsp;</asp:TableCell>
             <asp:TableCell>&nbsp;</asp:TableCell>
         </asp:TableRow>
         <asp:TableRow>
             <asp:TableCell>&nbsp;</asp:TableCell>
-            <asp:TableCell>&nbsp;</asp:TableCell>
-            
             <asp:TableCell HorizontalAlign="Right">
-                <asp:Button ID="Btn_Submit" runat="server" Text="Submit" onClick="Btn_Submit_Click"/>
-                <asp:Button ID="Button1" runat="server" Text="Reset" onClick="Btn_Reset_Click"/>
+                <asp:Button ID="Button2" runat="server" Text="Submit" onClick="Btn_Submit_Click"/>
+                <asp:Button ID="Button3" runat="server" Text="Reset" onClick="Btn_Reset_Click"/>
             </asp:TableCell>
+            
+            <asp:TableCell >&nbsp;</asp:TableCell>           
             <asp:TableCell>
-                
+                <asp:Label ID="Lbl_studentError" runat="server" Text="Error message shows here" Visible="false" ForeColor="Red"></asp:Label>
             </asp:TableCell>
         </asp:TableRow>
     </asp:Table>

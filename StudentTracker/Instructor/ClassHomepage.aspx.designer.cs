@@ -76,22 +76,31 @@ namespace StudentTracker.Instructor {
         protected global::System.Web.UI.WebControls.GridView GrdVw_studentAddErrors;
         
         /// <summary>
-        /// Btn_Submit control.
+        /// Button2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Btn_Submit;
+        protected global::System.Web.UI.WebControls.Button Button2;
         
         /// <summary>
-        /// Button1 control.
+        /// Button3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button1;
+        protected global::System.Web.UI.WebControls.Button Button3;
+        
+        /// <summary>
+        /// Lbl_studentError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Lbl_studentError;
         
         /// <summary>
         /// Lbl_classList control.
