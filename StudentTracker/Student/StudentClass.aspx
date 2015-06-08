@@ -1,19 +1,8 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Student/Student.master" AutoEventWireup="true" CodeBehind="StudentClass.aspx.cs" Inherits="StudentTracker.Student.StudentClass" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <script lang="javascript" type="text/javascript">
-        $("[src*=*plus]").live("click", function () {
-            $(this).closest("tr").after("<tr><td></td><td colspan = '999'>" + $(this).next().html() + "</td></tr>")
-            $(this).attr("src", "../Images/minus.png");
-        });
-        $("[src*=*minus]").live("click", function () {
-            $(this).attr("src", "../Images/plus.png");
-            $(this).closest("tr").next().remove();
-        });
-    </script>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">    
     <h1>
         <asp:Label ID="Lbl_pageTitle" runat="server" Text="Student Class"></asp:Label>&nbsp;&nbsp;&nbsp;
-                    
     </h1>
     <h4>
         <asp:Literal runat="server" ID="ErrorMessage" />
@@ -28,9 +17,7 @@
     <p>
         <asp:FileUpload ID="FileUpload1" runat="server" />
     <p>
-
         <asp:Button ID="btnSubmit" runat="server" Text="Submit" Width="156px" Height="30px" Font-Size="Larger" OnClick="btnSubmit_Click" />
-
     <p>
     <p>
 
@@ -40,12 +27,11 @@
             <Columns>
                  <asp:BoundField DataField="AssignmentName" ItemStyle-CssClass="row" ItemStyle-Width="20%" HeaderStyle-VerticalAlign="Top" ItemStyle-VerticalAlign="Top" HeaderText="Homework"></asp:BoundField>
                 <asp:BoundField DataField="Grade" ItemStyle-Width="10%" HeaderStyle-VerticalAlign="Top" ItemStyle-VerticalAlign="Top" HeaderText="Grade"></asp:BoundField>
-                
+                <asp:BoundField DataField="MaxPoint" ItemStyle-Width="10%" HeaderStyle-VerticalAlign="Top" ItemStyle-VerticalAlign="Top" HeaderText="MaxPoint"></asp:BoundField>
                 <asp:TemplateField ItemStyle-Width="70%">
                     <ItemTemplate>
-                       <%-- <asp:Image  runat="server" ImageUrl="~/Images/plus.png" />
-                        <asp:Panel ID="pnlOrders" runat="server" Style="display:none">--%>
-                        <asp:GridView ID="gvAssignmentFiles" CellPadding="5" CellSpacing="5" RowStyle-Width="100%" ForeColor="#333333" GridLines="None" runat="server" AutoGenerateColumns="false">
+                        
+                        <asp:GridView ID="gvAssignmentFiles"  CellPadding="5" CellSpacing="5" RowStyle-Width="100%" ForeColor="#333333" GridLines="None" runat="server" AutoGenerateColumns="false">
                             <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
                             <Columns>
                                 <asp:TemplateField ItemStyle-Width="60%" HeaderText="  File"  >
@@ -66,7 +52,7 @@
                             <SortedDescendingCellStyle BackColor="#FFFDF8" />
                             <SortedDescendingHeaderStyle BackColor="#6F8DAE" />
                         </asp:GridView>
-                        <%--</asp:Panel>--%>
+                        
                     </ItemTemplate>
                 </asp:TemplateField>
                
