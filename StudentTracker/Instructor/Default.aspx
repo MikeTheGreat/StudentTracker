@@ -23,12 +23,12 @@
                 <asp:ListView ID="CourseListView" runat="server">
                     <EmptyDataTemplate>
                         <ul class="nav nav-tabs">
-                            <li role="presentation" runat="server" class="active"><a href="#"><span class="glyphicon glyphicon-folder-close"></span>&nbsp Current Quarter :: <asp:Label ID="quarterYear" runat="server"></asp:Label></a></li>
+                            <li role="presentation" runat="server" class="active"><a href="#"><span class="glyphicon glyphicon-folder-close"></span>&nbsp Current Quarter : <asp:Label ID="quarterYear" runat="server"></asp:Label></a></li>
                         </ul>
                         <table class="table" style="width: 100%;">
                             <tr>
                                 <th style="text-align: center;">
-                                    <h3>No Class Found From Select Quarter!</h3>
+                                    <h3>No Class Found From Selected Quarter!</h3>
                                 </th>
                             </tr>
                         </table>
@@ -100,7 +100,7 @@
                                     <div class="col-md-6">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"><%# LoadAllExamFinal(Convert.ToInt32(Eval("CourseID"))) %></span>
-                                            <div class="form-control">Exam/Final</div>
+                                            <div class="form-control">Exams/Final</div>
                                         </div>
                                     </div>
                                 </div>
@@ -108,13 +108,27 @@
                                     <div class="col-md-6">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"><%# LoadAllICE(Convert.ToInt32(Eval("CourseID"))) %></span>
-                                            <div class="form-control">In Class Exercise</div>
+                                            <div class="form-control">In Class Exercises</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-addon"><%# LoadAllExtraCredit(Convert.ToInt32(Eval("CourseID"))) %></span>
                                             <div class="form-control">Extra Credit</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="row" style="margin-top: 2px;">
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><%# LoadAllPCEs(Convert.ToInt32(Eval("CourseID"))) %></span>
+                                            <div class="form-control">PCEs</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><%# LoadAllQuizes(Convert.ToInt32(Eval("CourseID"))) %></span>
+                                            <div class="form-control">Quizes</div>
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +142,7 @@
         <!--Next quarter year class-->
         <div class="row" style="margin-top: 5px">
             <div class="col-md-11">
-                <h3><span style="font-size: 20px; color: #ff6a00" class="glyphicon glyphicon-book"></span>&nbsp Next Quarters Year Classes :: <asp:Label ID="nextQuarterYear" runat="server"></asp:Label></h3>
+                <h3><span style="font-size: 20px; color: #ff6a00" class="glyphicon glyphicon-book"></span>&nbsp Next Quarter Classes : <asp:Label ID="nextQuarterYear" runat="server"></asp:Label></h3>
             </div>
 
             <div class="col-md-12">
@@ -137,7 +151,7 @@
                         <table class="table">
                             <tr>
                                 <th style="text-align: center;">
-                                    <h3>No Class Found Fro Next Quarter Year!</h3>
+                                    <h3>No Classes Found For Next Quarter!</h3>
                                 </th>
                             </tr>
                         </table>
@@ -167,7 +181,7 @@
         <!--Previous quarter year class-->
         <div class="row" style="margin-top: 5px">
             <div class="col-md-11">
-                <h3><span style="font-size: 20px; color: #ff6a00" class="glyphicon glyphicon-book"></span>&nbsp All Previous Quarters Year Classes</h3>
+                <h3><span style="font-size: 20px; color: #ff6a00" class="glyphicon glyphicon-book"></span>&nbsp All Other Classes</h3>
             </div>
 
             <div class="col-md-12">
