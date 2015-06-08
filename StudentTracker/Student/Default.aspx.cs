@@ -55,7 +55,6 @@ namespace StudentTracker.Student
 
                 LoadPreviousCourses();
                 LoadNextQuarterCourses();
-
             }
         }
 
