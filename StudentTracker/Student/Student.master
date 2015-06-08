@@ -13,8 +13,7 @@
 
                 <ul class="list-group">
                     <li class="list-group-item"><a href="JoinClass">Join a class</a></li>
-                    <li class="list-group-item"><a href="Default">Student Page</a></li>
-                    <li class="list-group-item"><a href="StudentClass">Student Class</a></li>
+                    <li class="list-group-item"><a href="Default">Student Page</a></li>                   
                     <li class="list-group-item"><a href="Edit Profile">Edit Profile</a></li>
                     <li class="list-group-item"><a href="ChangePassword">Change Password</a></li>
                     <li class="list-group-item"><a href="#">Feature Link</a></li>
