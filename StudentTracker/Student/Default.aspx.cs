@@ -50,8 +50,6 @@ namespace StudentTracker.Student
 
                 schoolYear.Text = DateTime.Now.Year.ToString();
 
-                Label mylabel = (Label)CourseListView.FindControl("quarterYear");
-                mylabel.Text = getQuarter.CurrentQuarter() + " " + DateTime.Now.Year.ToString();
 
                 LoadPreviousCourses();
                 LoadNextQuarterCourses();

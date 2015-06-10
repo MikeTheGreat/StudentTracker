@@ -22,7 +22,7 @@
                 <asp:ListView ID="CourseListView" runat="server">
                     <EmptyDataTemplate>
                         <ul class="nav nav-tabs">
-                            <li role="presentation" runat="server" class="active"><a href="#"><span class="glyphicon glyphicon-folder-close"></span>&nbsp Current Quarter :: <asp:Label ID="quarterYear" runat="server"></asp:Label></a></li>
+                            <li role="presentation" runat="server" class="active"><a href="#"><span class="glyphicon glyphicon-folder-close"></span>&nbsp Current Quarter</a></li>
                         </ul>
                         <table class="table" style="width: 100%;">
                             <tr>
