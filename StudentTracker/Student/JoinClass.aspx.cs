@@ -72,7 +72,7 @@ namespace StudentTracker.Student
                  if (classID > 0)
                  {
                      ErrorMessage.Text += "<br>You have successfully joined a class.";
-                     Response.Redirect("~/Student")
+                     Response.Redirect("~/Student");
 
                  }
                  else
