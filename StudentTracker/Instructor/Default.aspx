@@ -70,7 +70,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <div style="width: 100%; float: left; font-weight: bold;"><a href="ClassHomepage.aspx?field1=<%#Eval("CourseID") %>"><%#Eval("CourseName") %></a></div>
+                                                <div style="width: 100%; float: left; font-weight: bold;"><a href="ClassHomepage.aspx?CourseID=<%#Eval("CourseID") %>"><%#Eval("CourseName") %></a></div>
                                             </div>
                                         </div>
                                     </div>
