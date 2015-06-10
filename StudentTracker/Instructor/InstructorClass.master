@@ -13,10 +13,10 @@
 
                 <ul class="list-group">
                      <li class="list-group-item"><a runat="server" href="~/"><span class="glyphicon glyphicon-home"></span>&nbsp Home</a></li>
-                    <li class="list-group-item"><a runat="server" href="AddHomework.aspx" id="queryhelper"><span class="glyphicon glyphicon-file"></span>&nbsp Add Assignment</a></li>
-                    <li class="list-group-item"><a runat="server" href="Homework.aspx"  id="testtodd1"><span class="glyphicon glyphicon-file"></span>&nbsp Edit/Delete Assignment</a></li>
+                    <li class="list-group-item"><a runat="server" href="AddHomework.aspx?CourseID=<%= classID %>" id="queryhelper"><span class="glyphicon glyphicon-file"></span>&nbsp Add Assignment</a></li>
+                    <li class="list-group-item"><a runat="server" href="Homework.aspx?CourseID=<%= classID %>"  id="testtodd1"><span class="glyphicon glyphicon-file"></span>&nbsp Edit/Delete Assignment</a></li>
                     <li class="list-group-item"><a  href="UploadGrade?CourseID=<%= classID %>"><span class="glyphicon glyphicon-save"></span>&nbsp Upload Grade</a></li>
-                    <li class="list-group-item"><a href="UploadFeedback.aspx"><span class="glyphicon glyphicon-save"></span>&nbsp Upload Feedback</a></li>
+                    <li class="list-group-item"><a href="UploadFeedback.aspx?CourseID=<%= classID %>"><span class="glyphicon glyphicon-save"></span>&nbsp Upload Feedback</a></li>
                     
                     <li class="list-group-item"><a href="#">Next Link Here</a></li>
                     <li class="list-group-item"><a href="#">Next Link Here</a></li>
