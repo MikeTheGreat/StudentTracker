@@ -26,7 +26,7 @@ namespace StudentTracker.Instructor
         {
             if (!IsPostBack)
             {
-                int classID = Convert.ToInt32(Request.QueryString["field1"]);
+                int classID = Convert.ToInt32(Request.QueryString["CourseID"]);
                 var dbClassID = db.Courses.SingleOrDefault(i => i.ID.Equals(classID));
                 if (dbClassID != null)
                 {
