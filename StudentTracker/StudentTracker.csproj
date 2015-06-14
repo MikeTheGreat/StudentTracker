@@ -350,7 +350,6 @@
     <Content Include="Student\EditProfile.aspx" />
     <Content Include="Student\JoinClass.aspx" />
     <Content Include="Student\StudentClass.aspx" />
-    <Content Include="Student\StudentPage.aspx" />
     <Content Include="test.aspx" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config">
@@ -678,13 +677,6 @@
     </Compile>
     <Compile Include="Student\StudentClass.aspx.designer.cs">
       <DependentUpon>StudentClass.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Student\StudentPage.aspx.cs">
-      <DependentUpon>StudentPage.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Student\StudentPage.aspx.designer.cs">
-      <DependentUpon>StudentPage.aspx</DependentUpon>
     </Compile>
     <Compile Include="test.aspx.cs">
       <DependentUpon>test.aspx</DependentUpon>
